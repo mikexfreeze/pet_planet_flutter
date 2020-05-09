@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petplanet/data/app_options.dart';
+import 'package:petplanet/routes.dart';
 
 void main() {
   runApp(PetPlanetApp());
@@ -22,26 +23,24 @@ class PetPlanetApp extends StatelessWidget {
       initialModel: AppOptions(),
       child: Builder(
         builder: (context){
-          return AppTemp();
+          return MaterialApp(
+            title: 'Pet Planet',
+            theme: ThemeData(
+              // primarySwatch: Colors.white,
+            ),
+            initialRoute: initialRoute,
+            onGenerateRoute: RouteConfiguration.onGenerateRoute,
+//            home: Scaffold(
+//              appBar: AppBar(
+//                title: Text('Welcome to Flutter'),
+//              ),
+//              body: Center(
+//                child: Text('hello world'),
+//              ),
+//            ),
+          );;
         }
       )
     );
   }
-}
-
-AppTemp(){
-  return MaterialApp(
-    title: 'Pet Planet',
-    theme: ThemeData(
-//        primarySwatch: Colors.white,
-    ),
-    home: Scaffold(
-      appBar: AppBar(
-        title: Text('Welcome to Flutter'),
-      ),
-      body: Center(
-        child: Text('hello world'),
-      ),
-    ),
-  );
 }
