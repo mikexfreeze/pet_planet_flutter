@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({
+class LoginPage extends StatefulWidget {
+  const LoginPage({
     Key key,
   }) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _LoginPageState createState() => _LoginPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +17,7 @@ class _HomePageState extends State<HomePage> {
         title: Text('Welcome to Flutter'),
       ),
       body: Center(
-        child: Text('home page'),
+        child: Text('login page'),
       ),
     );
   }

@@ -1,6 +1,9 @@
 # petplanet
 
-A new Flutter application.
+### 开发记录
+
+1. 仿造官方 exmaple Gallery 开发，路由采用双层结构，外面大路由可包裹几个风格不同的 app 或主题页面
+
 
 ## Getting Started
 
