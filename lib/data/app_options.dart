@@ -147,7 +147,7 @@ class AppOptions {
   }
 }
 
-// Applies text GalleryOptions to a widget
+// Applies text AppOptions to a widget
 class ApplyTextOptions extends StatelessWidget {
   const ApplyTextOptions({@required this.child});
 
