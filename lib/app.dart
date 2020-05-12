@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:petplanet/model/app_state_model.dart';
-import 'package:petplanet/pages/home.dart';
+import 'package:petplanet/pages/home/home.dart';
 import 'package:petplanet/pages/login.dart';
 import 'package:scoped_model/scoped_model.dart';
 
