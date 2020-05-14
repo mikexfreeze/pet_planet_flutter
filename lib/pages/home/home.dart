@@ -16,27 +16,24 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    var petList = <Widget>[];
-    for (var pet in exmaplePetList){
-      petList.add(
-        Padding(
-          padding: const EdgeInsets.all(
-            _listViewPadding,
-          ),
-          child: PetCard()
-        )
-      );
-    }
     return Scaffold(
       appBar: AppBar(
         title: Text('Welcome to Flutter'),
       ),
       body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(
-            _listViewPadding,
+        child: ListView.builder(
+          padding: const EdgeInsets.symmetric(
+            vertical: _listViewPadding,
           ),
-          children: petList,
+          itemCount: 2,
+          itemBuilder: (context, i) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: _listViewPadding,
+              ),
+              child: PetCard()
+            );
+          }
         )
       ),
     );
