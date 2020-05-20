@@ -6,6 +6,11 @@ import 'package:petplanet/theme.dart';
 
 const _horizontalPadding = 24.0;
 
+class LoginData {
+  String username = '';
+  String password = '';
+}
+
 class LoginPage extends StatefulWidget {
   const LoginPage({
     Key key,
@@ -16,124 +21,92 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
+  void showInSnackBar(String value) {
+    _scaffoldKey.currentState.hideCurrentSnackBar();
+    _scaffoldKey.currentState.showSnackBar(SnackBar(
+      content: Text(value),
+    ));
+  }
+
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
+  bool _autoValidate = false;
+
+  void _handleSubmitted() {
+    final form = _formKey.currentState;
+    if (!form.validate()) {
+      _autoValidate = true; // Start validating on every change.
+      showInSnackBar('请先修正红色错误，然后再提交。');
+    } else {
+      form.save();
+      print(loginData.username);
+    }
+  }
+
+  LoginData loginData = new LoginData();
+
+  String _validateName(String value) {
+    if (value.isEmpty) {
+      return '请输入';
+    }
+    final nameExp = RegExp(r'^[A-Za-z ]+$');
+    if (!nameExp.hasMatch(value)) {
+      return '用户名只能为大小写字母';
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return ApplyTextOptions(
       child: Scaffold(
+        key: _scaffoldKey,
         body: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(
-              horizontal: _horizontalPadding,
-            ),
-            children: const <Widget>[
-              SizedBox(height: 120,),
-              _UsernameTextField(),
-              SizedBox(height: 12),
-              _PasswordTextField(),
-              LoginButton(),
-            ],
+          child: Form(
+            autovalidate: _autoValidate,
+            key: _formKey,
+            child: ListView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: _horizontalPadding,
+              ),
+              children: [
+                SizedBox(height: 120,),
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: '请输入',
+                    labelText: '用户名',
+                  ),
+                  onSaved: (value) {
+                    loginData.username = value;
+                  },
+                  validator: _validateName,
+                ),
+                SizedBox(height: 12),
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: '请输入',
+                    labelText: '密码',
+                  ),
+                  onSaved: (value) {
+                    loginData.password = value;
+                  },
+                ),
+                SizedBox(height: 12),
+                Center(
+                  child: RaisedButton(
+                    child: Text('登录'),
+                    onPressed: _handleSubmitted,
+                  ),
+                ),
+              ],
+            )
           )
+
         )
       ),
     );
 
-  }
-}
-
-class _UsernameTextField extends StatelessWidget {
-  const _UsernameTextField();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final _usernameController = TextEditingController();
-
-    return Container(
-      child: TextField(
-        controller: _usernameController,
-        cursorColor: colorScheme.onSurface,
-        decoration: InputDecoration(
-          labelText: '用户名',
-        ),
-      ),
-    );
-  }
-}
-
-class _PasswordTextField extends StatelessWidget {
-  const _PasswordTextField();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    final _passwordController = TextEditingController();
-
-    return  Container(
-      child: TextField(
-        controller: _passwordController,
-        cursorColor: colorScheme.onSurface,
-        obscureText: true,
-        decoration: InputDecoration(
-          labelText: '密码',
-        ),
-      ),
-    );
-  }
-}
-
-class LoginButton extends StatelessWidget {
-  const LoginButton();
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-
-    final buttonTextPadding = EdgeInsets.zero;
-
-    return Wrap(
-      children: [
-        ButtonBar(
-          buttonPadding: null,
-          children: [
-            RaisedButton(
-              child: Padding(
-                padding: buttonTextPadding,
-                child: Text(
-                  '登录',
-                  style: TextStyle(
-                      letterSpacing: letterSpacingOrNone(largeLetterSpacing)),
-                ),
-              ),
-              elevation: 8,
-              shape: const BeveledRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(7)),
-              ),
-              onPressed: () {
-                Navigator.of(context).pushNamed(App.homeRoute);
-              },
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-}
-
-class PrimaryColorOverride extends StatelessWidget {
-  const PrimaryColorOverride({Key key, this.color, this.child})
-      : super(key: key);
-
-  final Color color;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return Theme(
-      child: child,
-      data: Theme.of(context).copyWith(primaryColor: color),
-    );
   }
 }
