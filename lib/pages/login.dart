@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:petplanet/app.dart';
 import 'package:petplanet/data/app_options.dart';
@@ -31,7 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final GlobalKey<FormFieldState<String>> _passwordFieldKey = GlobalKey<FormFieldState<String>>();
   bool _autoValidate = false;
 
   void _handleSubmitted() {
@@ -41,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
       showInSnackBar('请先修正红色错误，然后再提交。');
     } else {
       form.save();
-      print(loginData.username);
+      print(loginData.password);
     }
   }
 
@@ -54,6 +55,14 @@ class _LoginPageState extends State<LoginPage> {
     final nameExp = RegExp(r'^[A-Za-z ]+$');
     if (!nameExp.hasMatch(value)) {
       return '用户名只能为大小写字母';
+    }
+    return null;
+  }
+
+  String _validatePassword(String value) {
+    final passwordField = _passwordFieldKey.currentState;
+    if (passwordField.value == null || passwordField.value.isEmpty) {
+      return '请输入';
     }
     return null;
   }
@@ -74,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
               children: [
                 SizedBox(height: 120,),
                 TextFormField(
+                  maxLength: 12,
                   decoration: InputDecoration(
                     hintText: '请输入',
                     labelText: '用户名',
@@ -84,13 +94,14 @@ class _LoginPageState extends State<LoginPage> {
                   validator: _validateName,
                 ),
                 SizedBox(height: 12),
-                TextFormField(
-                  decoration: InputDecoration(
-                    hintText: '请输入',
-                    labelText: '密码',
-                  ),
-                  onSaved: (value) {
-                    loginData.password = value;
+                PasswordField(
+                  fieldKey: _passwordFieldKey,
+                  labelText: '密码',
+                  helperText: '请输入',
+                  onFieldSubmitted: (value) {
+                    setState(() {
+                      loginData.password = value;
+                    });
                   },
                 ),
                 SizedBox(height: 12),
@@ -108,5 +119,61 @@ class _LoginPageState extends State<LoginPage> {
       ),
     );
 
+  }
+}
+
+class PasswordField extends StatefulWidget {
+  const PasswordField({
+    this.fieldKey,
+    this.hintText,
+    this.labelText,
+    this.helperText,
+    this.onSaved,
+    this.validator,
+    this.onFieldSubmitted,
+  });
+
+  final Key fieldKey;
+  final String hintText;
+  final String labelText;
+  final String helperText;
+  final FormFieldSetter<String> onSaved;
+  final FormFieldValidator<String> validator;
+  final ValueChanged<String> onFieldSubmitted;
+
+  @override
+  _PasswordFieldState createState() => _PasswordFieldState();
+}
+
+class _PasswordFieldState extends State<PasswordField> {
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      key: widget.fieldKey,
+      obscureText: _obscureText,
+      maxLength: 12,
+      onSaved: widget.onSaved,
+      validator: widget.validator,
+      onFieldSubmitted: widget.onFieldSubmitted,
+      decoration: InputDecoration(
+        hintText: widget.hintText,
+        labelText: widget.labelText,
+        helperText: widget.helperText,
+        suffixIcon: GestureDetector(
+          dragStartBehavior: DragStartBehavior.down,
+          onTap: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+          child: Icon(
+            _obscureText ? Icons.visibility : Icons.visibility_off,
+          ),
+        ),
+      ),
+
+    );
   }
 }
