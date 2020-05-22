@@ -1,8 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:petplanet/app.dart';
-import 'package:petplanet/layout/letter_spacing.dart';
-import 'package:petplanet/theme.dart';
+import 'package:http/http.dart' as http;
 
 const _horizontalPadding = 24.0;
 
@@ -69,6 +70,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    Future<Token> _responseData = login();
+    _responseData.then((value) =>{
+      print(value.token)
+    }).catchError((error) => print(error));
     return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
@@ -172,6 +177,37 @@ class _PasswordFieldState extends State<PasswordField> {
         ),
       ),
 
+    );
+  }
+}
+
+Future<Token> login() async {
+  final http.Response response = await http.post(
+    'http://aws.duandiwang.com:8080/api/authenticate',
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'password': 'x1986119',
+      'username': 'test01',
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    return Token.fromJson(json.decode(response.body));
+  } else {
+    throw Exception('Failed to login.');
+  }
+}
+
+class Token {
+  String token;
+
+  Token({this.token});
+
+  factory Token.fromJson(Map<String, dynamic> json) {
+    return Token(
+      token: json['id_token'],
     );
   }
 }
