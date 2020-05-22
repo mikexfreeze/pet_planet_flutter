@@ -1,7 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:petplanet/app.dart';
-import 'package:petplanet/data/app_options.dart';
 import 'package:petplanet/layout/letter_spacing.dart';
 import 'package:petplanet/theme.dart';
 
@@ -43,6 +42,7 @@ class _LoginPageState extends State<LoginPage> {
     } else {
       form.save();
       print(loginData.password);
+      Navigator.of(context).pushNamed(App.homeRoute);
     }
   }
 
@@ -69,54 +69,52 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ApplyTextOptions(
-      child: Scaffold(
+    return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
-          child: Form(
-            autovalidate: _autoValidate,
-            key: _formKey,
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                horizontal: _horizontalPadding,
-              ),
-              children: [
-                SizedBox(height: 120,),
-                TextFormField(
-                  maxLength: 12,
-                  decoration: InputDecoration(
-                    hintText: '请输入',
-                    labelText: '用户名',
+            child: Form(
+                autovalidate: _autoValidate,
+                key: _formKey,
+                child: ListView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: _horizontalPadding,
                   ),
-                  onSaved: (value) {
-                    loginData.username = value;
-                  },
-                  validator: _validateName,
-                ),
-                SizedBox(height: 12),
-                PasswordField(
-                  fieldKey: _passwordFieldKey,
-                  labelText: '密码',
-                  helperText: '请输入',
-                  onFieldSubmitted: (value) {
-                    setState(() {
-                      loginData.password = value;
-                    });
-                  },
-                ),
-                SizedBox(height: 12),
-                Center(
-                  child: RaisedButton(
-                    child: Text('登录'),
-                    onPressed: _handleSubmitted,
-                  ),
-                ),
-              ],
+                  children: [
+                    SizedBox(height: 120,),
+                    TextFormField(
+                      maxLength: 12,
+                      decoration: InputDecoration(
+                        hintText: '请输入',
+                        labelText: '用户名',
+                      ),
+                      onSaved: (value) {
+                        loginData.username = value;
+                      },
+                      validator: _validateName,
+                    ),
+                    SizedBox(height: 12),
+                    PasswordField(
+                      fieldKey: _passwordFieldKey,
+                      labelText: '密码',
+                      helperText: '请输入',
+                      onFieldSubmitted: (value) {
+                        setState(() {
+                          loginData.password = value;
+                        });
+                      },
+                    ),
+                    SizedBox(height: 12),
+                    Center(
+                      child: RaisedButton(
+                        child: Text('登录'),
+                        onPressed: _handleSubmitted,
+                      ),
+                    ),
+                  ],
+                )
             )
-          )
 
         )
-      ),
     );
 
   }
