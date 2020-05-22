@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:petplanet/app.dart';
-import 'package:petplanet/main.dart';
-import 'package:petplanet/pages/home/home.dart';
 //import 'package:petplanet/pages/demo.dart';
 //import 'package:petplanet/studies/crane/app.dart';
 //import 'package:petplanet/studies/fortnightly/app.dart';

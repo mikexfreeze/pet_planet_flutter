@@ -1,10 +1,10 @@
 var exmaplePetList = [
-  pet('test1'),pet('test2')
+  Pet('test1'),Pet('test2')
 ];
 
-class pet {
+class Pet {
   String title;
-  pet(title){
+  Pet(title){
     this.title = title;
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:petplanet/data/exmaple/pet.dart';
 import 'package:petplanet/pages/home/pet_card.dart';
 
 const _listViewPadding = 8.0;

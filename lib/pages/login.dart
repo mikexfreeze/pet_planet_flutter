@@ -4,6 +4,8 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:petplanet/app.dart';
 import 'package:http/http.dart' as http;
+import 'package:petplanet/models/user.dart';
+import 'package:provider/provider.dart';
 
 const _horizontalPadding = 24.0;
 
@@ -31,6 +33,9 @@ class _LoginPageState extends State<LoginPage> {
     ));
   }
 
+  UserModel user;
+
+
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey = GlobalKey<FormFieldState<String>>();
   bool _autoValidate = false;
@@ -42,7 +47,13 @@ class _LoginPageState extends State<LoginPage> {
       showInSnackBar('请先修正红色错误，然后再提交。');
     } else {
       form.save();
-      print(loginData.password);
+      print('loginData.password: ${loginData.password}');
+
+      Future<Token> _responseData = login();
+      _responseData.then((value) {
+        print('token: ${value.token}');
+        user.setToken(value.token);
+      }).catchError((error) => print(error));
       Navigator.of(context).pushNamed(App.homeRoute);
     }
   }
@@ -70,10 +81,8 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future<Token> _responseData = login();
-    _responseData.then((value) =>{
-      print(value.token)
-    }).catchError((error) => print(error));
+    user = Provider.of<UserModel>(context);
+    print('user.token ${user.token}');
     return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
@@ -95,7 +104,7 @@ class _LoginPageState extends State<LoginPage> {
                       onSaved: (value) {
                         loginData.username = value;
                       },
-                      validator: _validateName,
+//                      validator: _validateName,
                     ),
                     SizedBox(height: 12),
                     PasswordField(
@@ -115,6 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _handleSubmitted,
                       ),
                     ),
+                    Text(user.token)
                   ],
                 )
             )

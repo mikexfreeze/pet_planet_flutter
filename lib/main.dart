@@ -27,7 +27,7 @@ class PetPlanetApp extends StatelessWidget {
           ),
           initialRoute: initialRoute,
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
-        );;
+        );
       }
     );
   }
