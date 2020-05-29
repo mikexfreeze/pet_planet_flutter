@@ -17,7 +17,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome to Flutter'),
+        title: Text(''),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.add),
+            onPressed: () => Navigator.pushNamed(context, '/new-post'),
+          ),
+        ],
       ),
       body: SafeArea(
         child: ListView.builder(

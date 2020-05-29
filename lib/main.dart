@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petplanet/models/user.dart';
 import 'package:petplanet/routes.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(PetPlanetApp());
@@ -20,13 +22,18 @@ class PetPlanetApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return  Builder(
       builder: (context){
-        return MaterialApp(
-          title: 'Pet Planet',
-          theme: ThemeData(
-            // primarySwatch: Colors.white,
+        return MultiProvider(
+          providers:[
+            ChangeNotifierProvider(create: (context) => UserModel()),
+          ],
+          child: MaterialApp(
+            title: 'Pet Planet',
+            theme: ThemeData(
+              // primarySwatch: Colors.white,
+            ),
+            initialRoute: initialRoute,
+            onGenerateRoute: RouteConfiguration.onGenerateRoute,
           ),
-          initialRoute: initialRoute,
-          onGenerateRoute: RouteConfiguration.onGenerateRoute,
         );
       }
     );

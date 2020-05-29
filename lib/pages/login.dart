@@ -6,6 +6,7 @@ import 'package:petplanet/app.dart';
 import 'package:http/http.dart' as http;
 import 'package:petplanet/models/user.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 const _horizontalPadding = 24.0;
 
@@ -53,9 +54,15 @@ class _LoginPageState extends State<LoginPage> {
       _responseData.then((value) {
         print('token: ${value.token}');
         user.setToken(value.token);
+        _setTokenInStorage(value.token);
       }).catchError((error) => print(error));
       Navigator.of(context).pushNamed(App.homeRoute);
     }
+  }
+
+  _setTokenInStorage(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('token', token);
   }
 
   LoginData loginData = new LoginData();
@@ -82,7 +89,6 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     user = Provider.of<UserModel>(context);
-    print('user.token ${user.token}');
     return Scaffold(
         key: _scaffoldKey,
         body: SafeArea(
@@ -124,7 +130,6 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _handleSubmitted,
                       ),
                     ),
-                    Text(user.token)
                   ],
                 )
             )
