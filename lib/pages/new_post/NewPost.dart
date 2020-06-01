@@ -93,11 +93,11 @@ class PhotoSourceSelector extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 300,
+      height: 250,
       child: Column(
         children: [
           Container(
-            height: 70,
+            height: 50,
             child: Center(
               child: Text(
                 '选择图片来源',
@@ -106,28 +106,15 @@ class PhotoSourceSelector extends StatelessWidget {
             ),
           ),
           const Divider(thickness: 1),
-          Row(
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  Ink(
-                    decoration: const ShapeDecoration(
-                      color: Colors.lightBlue,
-                      shape: CircleBorder(),
-                    ),
-                    child: IconButton(
-                      icon: Icon(Icons.insert_photo),
-                      color: Colors.white,
-                      onPressed: () {
-
-                      },
-                    ),
-                  ),
-                  Text('图库选择')
-                ],
-              ),
-              _PhotoShapeIcon(icon: Icons.photo_camera, title: '拍照上传')
-            ],
+          Container(
+            height: 170,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                _PhotoShapeIcon(icon: Icons.insert_photo, title: '图库选择'),
+                _PhotoShapeIcon(icon: Icons.photo_camera, title: '拍照上传')
+              ],
+            ),
           )
         ],
       ),
@@ -148,6 +135,7 @@ class _PhotoShapeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Ink(
           decoration: const ShapeDecoration(
