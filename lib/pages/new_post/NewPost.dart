@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
+import 'package:multi_image_picker/multi_image_picker.dart';
 
 class NewPost extends StatefulWidget {
   @override
@@ -21,14 +21,24 @@ class _NewPostState extends State<NewPost> {
     showModalBottomSheet<void>(
       context: context,
       builder: (context) {
-        return PhotoSourceSelector();
+        return PhotoSourceSelector(
+          hdlSelectImages: _hdlSelectImages
+        );
       },
     );
 //    file = await ImagePicker.pickImage(source: ImageSource.camera);
 //    file = await ImagePicker.pickImage(source: ImageSource.gallery);
   }
 
+  void _hdlSelectImages () async {
+    var resultList = await MultiImagePicker.pickImages(
+      maxImages :  10 ,
+      enableCamera: true,
+    );
 
+    // The data selected here comes back in the list
+    print('resultList $resultList');
+  }
 
   void _upload() {
     if (file == null) return;
@@ -68,7 +78,7 @@ class _NewPostState extends State<NewPost> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
                   RaisedButton(
-                    onPressed: _showPhotoSourceModal,
+                    onPressed: _hdlSelectImages,
                     child: Text('上传照片'),
                   ),
                   SizedBox(width: 10.0),
@@ -90,6 +100,13 @@ class _NewPostState extends State<NewPost> {
 }
 
 class PhotoSourceSelector extends StatelessWidget {
+  PhotoSourceSelector({
+    Key key,
+    this.hdlSelectImages,
+  }) : super(key: key);
+
+  final Function hdlSelectImages;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -111,7 +128,11 @@ class PhotoSourceSelector extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                _PhotoShapeIcon(icon: Icons.insert_photo, title: '图库选择'),
+                _PhotoShapeIcon(
+                  icon: Icons.insert_photo,
+                  title: '图库选择',
+                  onPressed: hdlSelectImages
+                ),
                 _PhotoShapeIcon(icon: Icons.photo_camera, title: '拍照上传')
               ],
             ),
@@ -127,10 +148,12 @@ class _PhotoShapeIcon extends StatelessWidget {
     Key key,
     this.icon,
     this.title,
+    this.onPressed
   }) : super(key: key);
 
   final String title;
   final IconData icon;
+  final Function onPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -145,9 +168,7 @@ class _PhotoShapeIcon extends StatelessWidget {
           child: IconButton(
             icon: Icon(icon),
             color: Colors.white,
-            onPressed: () {
-
-            },
+            onPressed: onPressed,
           ),
         ),
         Text(title)

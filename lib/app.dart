@@ -3,8 +3,6 @@ import 'package:petplanet/models/user.dart';
 import 'package:petplanet/pages/home/home.dart';
 import 'package:petplanet/pages/login.dart';
 import 'package:petplanet/pages/new_post/NewPost.dart';
-import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class App extends StatefulWidget {
   const App({
