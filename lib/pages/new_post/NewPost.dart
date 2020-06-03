@@ -20,11 +20,13 @@ class _NewPostState extends State<NewPost> {
   UserModel user;
   String _error;
   File file;
+  List<int> imageIds;
 
   Future<void> _hdlSelectImages() async {
     setState(() {
       images = List<Asset>();
     });
+    imageIds = [];
 
     List<Asset> resultList;
     String error;
@@ -40,6 +42,17 @@ class _NewPostState extends State<NewPost> {
 
     if (!mounted) return;
 
+    for (Asset asset in resultList) {
+      ByteData byteData = await asset.getByteData(quality: 20);
+      List<int> imageData = byteData.buffer.asUint8List();
+
+      String imageB64 = base64Encode(imageData);
+      var res = _upload(imageB64);
+      await res.then((value) {
+        imageIds.add(value.id);
+      }).catchError((error) => print(error));
+    }
+    print('imageIds $imageIds');
     setState(() {
       images = resultList;
       if (error == null) _error = 'No Error Dectected';
@@ -50,6 +63,8 @@ class _NewPostState extends State<NewPost> {
     if (images != null)
       return GridView.count(
         crossAxisCount: 3,
+        shrinkWrap: true,
+        physics: new NeverScrollableScrollPhysics(),
         children: List.generate(images.length, (index) {
           Asset asset = images[index];
           return AssetThumb(
@@ -63,13 +78,9 @@ class _NewPostState extends State<NewPost> {
       return Container(color: Colors.white);
   }
 
-  void _upload() async {
+  Future<ImageId> _upload(imageB64) async {
     String token = user.token;
 
-    ByteData byteData = await images[0].getByteData(quality: 20);
-    List<int> imageData = byteData.buffer.asUint8List();
-
-    String imageB64 = base64Encode(imageData);
     final http.Response response = await http.post(
       Uri.parse('$BASE_URL/api/images'),
       headers: <String, String>{
@@ -84,7 +95,8 @@ class _NewPostState extends State<NewPost> {
 
     print('response.body, $response.body');
     if (response.statusCode == 201) {
-      return print(json.decode(response.body));
+//      print(json.decode(response.body));
+      return ImageId.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to upload.');
     }
@@ -97,36 +109,53 @@ class _NewPostState extends State<NewPost> {
       appBar: AppBar(
         title: Text(''),
       ),
-      body: Container(
-        padding: EdgeInsets.all(8.0),
-        child: Column(
-          children: <Widget>[
-            TextFormField(
-              decoration: InputDecoration(
-                hintText: '请输入，别忘了留下联系方式',
-                labelText: '正文内容',
-              ),
-              maxLines: 5,
-
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                RaisedButton(
-                  onPressed: _hdlSelectImages,
-                  child: Text('上传照片'),
+      body: Scrollbar(
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(8),
+          child: Column(
+            children: <Widget>[
+              TextFormField(
+                maxLength: 20,
+                decoration: InputDecoration(
+                  hintText: '请输入',
+                  labelText: '标题',
                 ),
-                SizedBox(width: 10.0),
-                RaisedButton(
-                  onPressed: _upload,
-                  child: Text('Upload Image'),
-                )
-              ],
-            ),
-            Expanded(
-              child: buildGridView(),
-            )
-          ],
+                onSaved: (value) {
+//                loginData.username = value;
+                },
+//                      validator: _validateName,
+              ),
+              SizedBox(height: 12),
+              TextFormField(
+                decoration: InputDecoration(
+                  hintText: '请输入，别忘了留下联系方式',
+                  labelText: '正文内容',
+                ),
+                maxLines: 5,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    onPressed: _hdlSelectImages,
+                    child: Text('上传照片'),
+                  ),
+                ],
+              ),
+              buildGridView(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  RaisedButton(
+                    color: Color(0xFF1976D2),
+                    textColor: Colors.white,
+                    onPressed: _hdlSelectImages,
+                    child: Text('提交'),
+                  ),
+                ],
+              )
+            ],
+          ),
         ),
       )
     );
@@ -211,3 +240,14 @@ class _PhotoShapeIcon extends StatelessWidget {
   }
 }
 
+class ImageId {
+  int id;
+
+  ImageId({this.id});
+
+  factory ImageId.fromJson(Map<String, dynamic> json) {
+    return ImageId(
+      id: json['id'],
+    );
+  }
+}
