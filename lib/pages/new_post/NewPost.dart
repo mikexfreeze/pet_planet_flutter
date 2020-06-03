@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:multi_image_picker/multi_image_picker.dart';
+import 'package:petplanet/models/user.dart';
+import 'package:provider/provider.dart';
+import '../../constants.dart';
 
 class NewPost extends StatefulWidget {
   @override
@@ -12,87 +16,117 @@ class NewPost extends StatefulWidget {
 
 class _NewPostState extends State<NewPost> {
 
-  // My IPv4 : 192.168.43.171
-  final String phpEndPoint = 'http://192.168.43.171/phpAPI/image.php';
-  final String nodeEndPoint = 'http://192.168.43.171:3000/image';
+  List<Asset> images = List<Asset>();
+  UserModel user;
+  String _error;
   File file;
 
-  void _showPhotoSourceModal() async {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (context) {
-        return PhotoSourceSelector(
-          hdlSelectImages: _hdlSelectImages
-        );
-      },
-    );
-//    file = await ImagePicker.pickImage(source: ImageSource.camera);
-//    file = await ImagePicker.pickImage(source: ImageSource.gallery);
-  }
-
-  void _hdlSelectImages () async {
-    var resultList = await MultiImagePicker.pickImages(
-      maxImages :  10 ,
-      enableCamera: true,
-    );
-
-    // The data selected here comes back in the list
-    print('resultList $resultList');
-  }
-
-  void _upload() {
-    if (file == null) return;
-    String base64Image = base64Encode(file.readAsBytesSync());
-    String fileName = file.path.split("/").last;
-    print('upload');
-    http.post(phpEndPoint, body: {
-      "image": base64Image,
-      "name": fileName,
-    }).then((res) {
-      print(res.statusCode);
-    }).catchError((err) {
-      print(err);
+  Future<void> _hdlSelectImages() async {
+    setState(() {
+      images = List<Asset>();
     });
+
+    List<Asset> resultList;
+    String error;
+
+    try {
+      resultList = await MultiImagePicker.pickImages(
+        maxImages: 5,
+        enableCamera: true,
+      );
+    } on Exception catch (e) {
+      error = e.toString();
+    }
+
+    if (!mounted) return;
+
+    setState(() {
+      images = resultList;
+      if (error == null) _error = 'No Error Dectected';
+    });
+  }
+
+  Widget buildGridView() {
+    if (images != null)
+      return GridView.count(
+        crossAxisCount: 3,
+        children: List.generate(images.length, (index) {
+          Asset asset = images[index];
+          return AssetThumb(
+            asset: asset,
+            width: 300,
+            height: 300,
+          );
+        }),
+      );
+    else
+      return Container(color: Colors.white);
+  }
+
+  void _upload() async {
+    String token = user.token;
+
+    ByteData byteData = await images[0].getByteData(quality: 20);
+    List<int> imageData = byteData.buffer.asUint8List();
+
+    String imageB64 = base64Encode(imageData);
+    final http.Response response = await http.post(
+      Uri.parse('$BASE_URL/api/images'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': token
+      },
+      body: jsonEncode(<String, String>{
+        'image': imageB64,
+        'imageContentType': 'image/jpeg',
+      }),
+    );
+
+    print('response.body, $response.body');
+    if (response.statusCode == 201) {
+      return print(json.decode(response.body));
+    } else {
+      throw Exception('Failed to upload.');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    user = Provider.of<UserModel>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(''),
       ),
-      body: SingleChildScrollView(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(8.0),
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: '请输入，别忘了留下联系方式',
-                  labelText: '正文内容',
-                ),
-                maxLines: 5,
+      body: Container(
+        padding: EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            TextFormField(
+              decoration: InputDecoration(
+                hintText: '请输入，别忘了留下联系方式',
+                labelText: '正文内容',
+              ),
+              maxLines: 5,
 
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: _hdlSelectImages,
-                    child: Text('上传照片'),
-                  ),
-                  SizedBox(width: 10.0),
-                  RaisedButton(
-                    onPressed: _upload,
-                    child: Text('Upload Image'),
-                  )
-                ],
-              ),
-              file == null
-                ? Text('No Image Selected')
-                : Image.file(file)
-            ],
-          ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                RaisedButton(
+                  onPressed: _hdlSelectImages,
+                  child: Text('上传照片'),
+                ),
+                SizedBox(width: 10.0),
+                RaisedButton(
+                  onPressed: _upload,
+                  child: Text('Upload Image'),
+                )
+              ],
+            ),
+            Expanded(
+              child: buildGridView(),
+            )
+          ],
         ),
       )
     );

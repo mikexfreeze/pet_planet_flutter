@@ -36,7 +36,6 @@ class _LoginPageState extends State<LoginPage> {
 
   UserModel user;
 
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState<String>> _passwordFieldKey = GlobalKey<FormFieldState<String>>();
   bool _autoValidate = false;
@@ -52,9 +51,9 @@ class _LoginPageState extends State<LoginPage> {
 
       Future<Token> _responseData = login();
       _responseData.then((value) {
-        print('token: ${value.token}');
-        user.setToken(value.token);
-        _setTokenInStorage(value.token);
+        String token = 'Bearer ${value.token}';
+        user.setToken(token);
+        _setTokenInStorage(token);
       }).catchError((error) => print(error));
       Navigator.of(context).pushNamed(App.homeRoute);
     }
