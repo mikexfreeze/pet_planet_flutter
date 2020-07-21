@@ -3,9 +3,14 @@
 ### 开发记录
 
 1. 仿造官方 exmaple Gallery 开发，路由采用双层结构，外面大路由可包裹几个风格不同的 app 或主题页面
-2. 登录页面逻辑，后台联调
+2. [x] 登录页面逻辑，后台联调
+3. [x] 联调图片上传接口
+4. [ ] 新建 post 
+5. [ ] post list 
 
-
+    5.1 []如何异步的构建 ListView
+    5.2 [x] 登录跳转在登录接口返回正确之后
+    5.3 [] 测试超过两页长度的 post list
 ## Getting Started
 
 This project is a starting point for a Flutter application.

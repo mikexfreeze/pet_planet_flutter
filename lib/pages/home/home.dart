@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:petplanet/models/posts.dart';
 import 'package:petplanet/pages/home/pet_card.dart';
+import 'package:provider/provider.dart';
 
 const _listViewPadding = 8.0;
 
@@ -26,21 +28,29 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: SafeArea(
-        child: ListView.builder(
-          padding: const EdgeInsets.symmetric(
-            vertical: _listViewPadding,
-          ),
-          itemCount: 2,
-          itemBuilder: (context, i) {
+        child: Selector<Posts, int>(
+          selector: (context, catalog) => catalog.itemCount,
+          builder: (context, itemCount, child) => ListView.builder(
+            padding: const EdgeInsets.symmetric(
+              vertical: _listViewPadding,
+            ),
+            itemCount: itemCount,
+            itemBuilder: (context, i) {
+            // Every item of the `ListView` is individually listening
+            // to the catalog.
+            var catalog = Provider.of<Posts>(context);
+
+            // Catalog provides a single synchronous method for getting
+            // the current data.
+            var item = catalog.getByIndex(i);
+
             return Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: _listViewPadding,
               ),
-              child: PetCard()
-            );
-          }
-        )
-      ),
+              child: PetCard());
+          }),
+      )),
     );
   }
 }

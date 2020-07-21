@@ -8,6 +8,7 @@ import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:petplanet/models/user.dart';
 import 'package:provider/provider.dart';
 import '../../constants.dart';
+import '../../utils/fetch.dart';
 
 class NewPost extends StatefulWidget {
   @override
@@ -57,6 +58,15 @@ class _NewPostState extends State<NewPost> {
       images = resultList;
       if (error == null) _error = 'No Error Dectected';
     });
+  }
+
+  Future<void> _hdlSubmit() async {
+    TestFetch fetch = TestFetch();
+    final http.Response response = await fetch.fetch('api/posts', jsonEncode(<String, String>{
+      "title": "test02",
+      'content': 'content',
+    }));
+    print('_hdlSubmit $response.body');
   }
 
   Widget buildGridView() {
@@ -149,7 +159,7 @@ class _NewPostState extends State<NewPost> {
                   RaisedButton(
                     color: Color(0xFF1976D2),
                     textColor: Colors.white,
-                    onPressed: _hdlSelectImages,
+                    onPressed: _hdlSubmit,
                     child: Text('提交'),
                   ),
                 ],

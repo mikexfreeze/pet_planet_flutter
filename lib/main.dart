@@ -3,6 +3,8 @@ import 'package:petplanet/models/user.dart';
 import 'package:petplanet/routes.dart';
 import 'package:provider/provider.dart';
 
+import 'models/posts.dart';
+
 void main() {
   runApp(PetPlanetApp());
 }
@@ -25,6 +27,7 @@ class PetPlanetApp extends StatelessWidget {
         return MultiProvider(
           providers:[
             ChangeNotifierProvider(create: (context) => UserModel()),
+            ChangeNotifierProvider(create: (context) => Posts()),
           ],
           child: MaterialApp(
             title: 'Pet Planet',

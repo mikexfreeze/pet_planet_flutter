@@ -47,15 +47,16 @@ class _LoginPageState extends State<LoginPage> {
       showInSnackBar('请先修正红色错误，然后再提交。');
     } else {
       form.save();
-      print('loginData.password: ${loginData.password}');
+//      print('loginData.password: ${loginData.password}');
 
       Future<Token> _responseData = login();
       _responseData.then((value) {
         String token = 'Bearer ${value.token}';
+        print('登录成功,api get token: ${value.token}');
         user.setToken(token);
         _setTokenInStorage(token);
+        Navigator.of(context).pushNamed(App.homeRoute);
       }).catchError((error) => print(error));
-      Navigator.of(context).pushNamed(App.homeRoute);
     }
   }
 
@@ -202,8 +203,8 @@ Future<Token> login() async {
       'Content-Type': 'application/json; charset=UTF-8',
     },
     body: jsonEncode(<String, String>{
-      'password': 'x1986119',
-      'username': 'test01',
+      'password': 'admin',
+      'username': 'admin',
     }),
   );
 
