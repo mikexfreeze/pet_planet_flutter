@@ -6,9 +6,14 @@ class Post {
 
   final String content;
 
+  final String image;
+
+
+
   Post({
     @required this.title,
     @required this.content,
+    this.image
   });
 
   Post.loading() : this(title: '...', content: '...');

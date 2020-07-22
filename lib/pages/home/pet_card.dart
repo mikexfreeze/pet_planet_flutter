@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:petplanet/models/api/post.dart';
 import 'package:petplanet/pages/pet_detail/pet_detail.dart';
+import 'dart:typed_data';
+import 'dart:convert';
 
 class PetCard extends StatelessWidget {
+
+  const PetCard(
+    this.post, {
+      Key key,
+    }) : super(key: key);
+
+  final Post post;
+
   @override
   Widget build(context) {
+    Uint8List bytes = base64.decode(this.post.image);
+    var image = new Image.memory(bytes);
     final imageWidget = AspectRatio(
       aspectRatio: 3/2,
       child: FittedBox(
         fit: BoxFit.cover,
-        child: Image(
-          image: AssetImage('assets/exmaple/pet_images/0-0.jpg'),
-        ),
+        child: image
       )
     );
 
@@ -29,23 +40,20 @@ class PetCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               imageWidget,
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
+              ListTile(
 
-                      new SizedBox(
-                        height: 30,
-                        width: 10.0,
-                      ),
-                      new Text(
-                        "金毛求收养",
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      )
-                    ],
+                title: Text(
+                  this.post.title,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                ],
+                ),
+                subtitle: Text(this.post.content),
+//                trailing: IconButton(
+//                  icon: Icon(Icons.more_horiz),
+//                  color: Colors.black,
+//                  onPressed: () => print('More'),
+//                ),
               ),
             ]
         ),

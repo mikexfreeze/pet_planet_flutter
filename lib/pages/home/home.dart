@@ -38,17 +38,17 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (context, i) {
             // Every item of the `ListView` is individually listening
             // to the catalog.
-            var catalog = Provider.of<Posts>(context);
+            var postList = Provider.of<Posts>(context);
 
             // Catalog provides a single synchronous method for getting
             // the current data.
-            var item = catalog.getByIndex(i);
+            var post = postList.getByIndex(i);
 
             return Padding(
               padding: const EdgeInsets.symmetric(
                 vertical: _listViewPadding,
               ),
-              child: PetCard());
+              child: PetCard(post));
           }),
       )),
     );

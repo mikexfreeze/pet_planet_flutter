@@ -32,7 +32,7 @@ class Posts extends ChangeNotifier {
 
   /// The size of the catalog. This is `null` at first, and only when the user
   /// reaches the end of the catalog, it will hold the actual number.
-  int itemCount;
+  int itemCount = 1;
 
   /// After the catalog is disposed, we don't allow it to call
   /// [notifyListeners].

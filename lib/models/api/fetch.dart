@@ -23,7 +23,7 @@ Future<ItemPage> fetchPage(int startingIndex, int pageIndex) async {
   final response = await client.get('api/posts?page=${pageIndex}&size=$itemsPerPage');
   if (response.statusCode == 200) {
     var jsonResponse = convert.jsonDecode(response.body);
-    print('api/posts: ${jsonResponse}');
+    print('api/posts 数量: ${jsonResponse.length}');
     listLength = jsonResponse.length;
     if(listLength > 0){
       if(listLength < itemsPerPage){
@@ -35,30 +35,35 @@ Future<ItemPage> fetchPage(int startingIndex, int pageIndex) async {
     }
 //    var itemCount = jsonResponse['totalItems'];
 //    print('Number of books about http: $itemCount.');
+
+    // If the [startingIndex] is beyond the bounds of the catalog, an
+    // empty page will be returned.
+    if (startingIndex > catalogLength) {
+      return ItemPage(
+        post: [],
+        startingIndex: startingIndex,
+        hasNext: false,
+      );
+    }
+//    var post = jsonResponse[0];
+//    var postString = Map<String, dynamic>.from(post);
+//    print('jsonResponse[index].title, ${postString['title']}');
+    // The page of items is generated here.
+    return ItemPage(
+      post: List.generate(
+        hasNext ? itemsPerPage : listLength,
+        (index) => Post(
+          title: jsonResponse[index]['title'],
+          content: jsonResponse[index]['content'],
+          image: jsonResponse[index]['images'][0]['image'],
+        )
+      ),
+      startingIndex: startingIndex,
+      // Returns `false` if we've reached the [catalogLength].
+      hasNext: startingIndex + itemsPerPage < catalogLength,
+    );
   } else {
     print('Request failed with status: ${response.statusCode}.');
   }
 
-  // If the [startingIndex] is beyond the bounds of the catalog, an
-  // empty page will be returned.
-  if (startingIndex > catalogLength) {
-    return ItemPage(
-      post: [],
-      startingIndex: startingIndex,
-      hasNext: false,
-    );
-  }
-
-  // The page of items is generated here.
-  return ItemPage(
-    post: List.generate(
-      hasNext ? itemsPerPage : listLength,
-      (index) => Post(
-        title: '1',
-        content: 'content',
-      )),
-    startingIndex: startingIndex,
-    // Returns `false` if we've reached the [catalogLength].
-    hasNext: startingIndex + itemsPerPage < catalogLength,
-  );
 }
