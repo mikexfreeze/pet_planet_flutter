@@ -15,8 +15,16 @@ class PetCard extends StatelessWidget {
 
   @override
   Widget build(context) {
-    Uint8List bytes = base64.decode(this.post.image);
-    var image = new Image.memory(bytes);
+    var image;
+    if(this.post.image == null){
+      image = Image(
+        image: AssetImage('assets/exmaple/pet_images/0-0.jpg'),
+      );
+    }else{
+      Uint8List bytes = base64.decode(this.post.image);
+      image = new Image.memory(bytes);
+    }
+
     final imageWidget = AspectRatio(
       aspectRatio: 3/2,
       child: FittedBox(

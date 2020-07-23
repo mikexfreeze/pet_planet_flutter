@@ -22,6 +22,16 @@ class _NewPostState extends State<NewPost> {
   String _error;
   File file;
   List<int> imageIds;
+  _PostData postData = new _PostData();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _autoValidate = false;
+
+  String _validateTitle(String value) {
+    if (value.isEmpty) {
+      return '请输入';
+    }
+    return null;
+  }
 
   Future<void> _hdlSelectImages() async {
     setState(() {
@@ -61,12 +71,28 @@ class _NewPostState extends State<NewPost> {
   }
 
   Future<void> _hdlSubmit() async {
-    TestFetch fetch = TestFetch();
-    final http.Response response = await fetch.fetch('api/posts', jsonEncode(<String, String>{
-      "title": "test02",
-      'content': 'content',
+    final form = _formKey.currentState;
+    if (!form.validate()) {
+      _autoValidate = true; // Start validating on every change.
+    } else {
+      form.save();
+    }
+    var client = Fetch();
+    var images = [];
+    for (var id in imageIds) {
+      var imageId = new ImageId(id:id);
+      images.add(imageId);
+    }
+
+    final response = await client.post('api/posts', body: jsonEncode({
+      "title": postData.title,
+      'content': postData.content,
+      'images': images
     }));
-    print('_hdlSubmit $response.body');
+    print('新建post api 状态码： ${response.statusCode}');
+    if(response.statusCode == 201){
+      Navigator.pushNamed(context, '/');
+    }
   }
 
   Widget buildGridView() {
@@ -103,7 +129,7 @@ class _NewPostState extends State<NewPost> {
       }),
     );
 
-    print('response.body, $response.body');
+    print('上传照片： ${response.body}');
     if (response.statusCode == 201) {
 //      print(json.decode(response.body));
       return ImageId.fromJson(json.decode(response.body));
@@ -122,49 +148,57 @@ class _NewPostState extends State<NewPost> {
       body: Scrollbar(
         child: SingleChildScrollView(
           padding: EdgeInsets.all(8),
-          child: Column(
-            children: <Widget>[
-              TextFormField(
-                maxLength: 20,
-                decoration: InputDecoration(
-                  hintText: '请输入',
-                  labelText: '标题',
-                ),
-                onSaved: (value) {
-//                loginData.username = value;
-                },
-//                      validator: _validateName,
-              ),
-              SizedBox(height: 12),
-              TextFormField(
-                decoration: InputDecoration(
-                  hintText: '请输入，别忘了留下联系方式',
-                  labelText: '正文内容',
-                ),
-                maxLines: 5,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    onPressed: _hdlSelectImages,
-                    child: Text('上传照片'),
+          child: Form(
+            autovalidate: _autoValidate,
+            key: _formKey,
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  maxLength: 20,
+                  decoration: InputDecoration(
+                    hintText: '请输入',
+                    labelText: '标题',
                   ),
-                ],
-              ),
-              buildGridView(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  RaisedButton(
-                    color: Color(0xFF1976D2),
-                    textColor: Colors.white,
-                    onPressed: _hdlSubmit,
-                    child: Text('提交'),
+                  onSaved: (value) {
+                    postData.title = value;
+                  },
+                  validator: _validateTitle,
+                ),
+                SizedBox(height: 12),
+                TextFormField(
+                  decoration: InputDecoration(
+                    hintText: '请输入，别忘了留下联系方式',
+                    labelText: '正文内容',
                   ),
-                ],
-              )
-            ],
+                  maxLines: 5,
+                  onSaved: (value) {
+                    postData.content = value;
+                  },
+                  validator: _validateTitle,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      onPressed: _hdlSelectImages,
+                      child: Text('上传照片'),
+                    ),
+                  ],
+                ),
+                buildGridView(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    RaisedButton(
+                      color: Color(0xFF1976D2),
+                      textColor: Colors.white,
+                      onPressed: _hdlSubmit,
+                      child: Text('提交'),
+                    ),
+                  ],
+                )
+              ],
+            ),
           ),
         ),
       )
@@ -260,4 +294,15 @@ class ImageId {
       id: json['id'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id
+    };
+  }
+}
+
+class _PostData {
+  String title = '';
+  String content = '';
 }

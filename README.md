@@ -11,6 +11,7 @@
     5.1 []如何异步的构建 ListView
     5.2 [x] 登录跳转在登录接口返回正确之后
     5.3 [] 测试超过两页长度的 post list
+    5.4 [] 新建 post 之后刷新列表
 ## Getting Started
 
 This project is a starting point for a Flutter application.
