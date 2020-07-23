@@ -73,6 +73,11 @@ class Posts extends ChangeNotifier {
     return Post.loading();
   }
 
+  checkNewPost() async {
+    _pages.remove(0);
+    notifyListeners();
+  }
+
   /// This method initiates fetching of the [ItemPage] at [startingIndex].
   Future<void> _fetchPage(int startingIndex, int pageIndex) async {
     if (_pagesBeingFetched.contains(startingIndex)) {
