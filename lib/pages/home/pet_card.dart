@@ -37,9 +37,7 @@ class PetCard extends StatelessWidget {
       onTap: () => Navigator.of(context).push<void>(
         MaterialPageRoute(
           builder: (context) => PetDetail(
-//            id: index,
-//            song: songNames[index],
-//            color: color,
+            this.post,
           ),
         ),
       ),

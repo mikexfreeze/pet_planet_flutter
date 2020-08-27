@@ -22,7 +22,8 @@ Future<ItemPage> fetchPage(int startingIndex, int pageIndex) async {
   var client = Fetch();
   final response = await client.get('api/posts?page=${pageIndex}&size=$itemsPerPage&sort=id,desc');
   if (response.statusCode == 200) {
-    var jsonResponse = convert.jsonDecode(response.body);
+    convert.Utf8Decoder utf8Decoder = new convert.Utf8Decoder();
+    var jsonResponse = convert.jsonDecode(utf8Decoder.convert(response.bodyBytes));
     print('api/posts 数量: ${jsonResponse.length}');
     listLength = jsonResponse.length;
     if(listLength > 0){
@@ -45,6 +46,8 @@ Future<ItemPage> fetchPage(int startingIndex, int pageIndex) async {
         hasNext: false,
       );
     }
+    var images = jsonResponse[0]['images'];
+    print(images);
 //    var post = jsonResponse[0];
 //    var postString = Map<String, dynamic>.from(post);
 //    print('jsonResponse[index].title, ${postString['title']}');
@@ -56,6 +59,7 @@ Future<ItemPage> fetchPage(int startingIndex, int pageIndex) async {
           title: jsonResponse[index]['title'],
           content: jsonResponse[index]['content'],
           image: jsonResponse[index]['images'].length > 0 ? jsonResponse[index]['images'][0]['image'] : null,
+          images: jsonResponse[index]['images']
         )
       ),
       startingIndex: startingIndex,

@@ -8,12 +8,13 @@ class Post {
 
   final String image;
 
-
+  final List images;
 
   Post({
     @required this.title,
     @required this.content,
-    this.image
+    this.image,
+    this.images
   });
 
   Post.loading() : this(title: '...', content: '...');
